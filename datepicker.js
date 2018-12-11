@@ -18,13 +18,25 @@ window.onload = function() {
     };
   })();
 
-  var datePickerTpl = '<div class="yearMonth"><a class="previous">&lsaquo;</a><span class="year">{y}</span>-<span class="month">{m}</span><a class="next">&rsaquo;</a></div><div class="days"><a>1</a><a>2</a><a>3</a><a>4</a><a>5</a><a>6</a><a>7</a><a>8</a><a>9</a><a>10</a><a>11</a><a>12</a><a>13</a><a>14</a><a>15</a><a>16</a><a>17</a><a>18</a><a>19</a><a>20</a><a>21</a><a>22</a><a>23</a><a>24</a><a>25</a><a>26</a><a>27</a><a>28</a><a>29</a><a>30</a><a>31</a>';
-
+  var days = '<a>1</a><a>2</a><a>3</a><a>4</a><a>5</a><a>6</a><a>7</a><a>8</a><a>9</a><a>10</a><a>11</a><a>12</a><a>13</a><a>14</a><a>15</a><a>16</a><a>17</a><a>18</a><a>19</a><a>20</a><a>21</a><a>22</a><a>23</a><a>24</a><a>25</a><a>26</a><a>27</a><a>28</a><a>29</a><a>30</a><a>31</a>';  
+  var datePickerTpl = '<div class="yearMonth"><a class="previous">&lsaquo;</a><span class="year">{y}</span>-<span class="month">{m}</span><a class="next">&rsaquo;</a></div> <div class="weekdays"><i>Mo</i><i>Tu</i><i>We</i><i>Th</i><i>Fr</i><i>St</i><i>Su</i></div><span class="nulldays"></span><span class="days">' + days + '</span>';
+    
+  
   function daysInMonth(month, year) {
   	return new Date(year, month, 0).getDate();
   }
 
+  function update_nulldays(dp, year, month)
+  {
+		var nulldays_num = new Date(year, month-1, 1).getDay(); if (nulldays_num == 0) nulldays_num = 7;
+		var nulldays = '<i></i>'.repeat(nulldays_num - 1);
+		//console.log(nulldays + nulldays_num);
+		var str = dp.querySelector(".days").innerHTML;
+		dp.querySelector(".nulldays").innerHTML = nulldays;
+  }
+  
   function hideInvalidDays(dp, month, year){
+	update_nulldays(dp, year, month);
     dp.querySelectorAll(".days a").forEach(function(a){
       a.style.display = "inline-block";
     });
@@ -61,8 +73,10 @@ window.onload = function() {
   	input.setAttribute("readonly", "true");
   	var dp = document.createElement("div");
     dp.className = "contextmenu";
-    dp.style.left = input.offsetLeft + "px";
-    dp.style.top = input.offsetTop + input.offsetHeight + "px";
+    //dp.style.left = input.offsetLeft + "px";
+    //dp.style.top = input.offsetTop + input.offsetHeight + "px";
+	dp.style.left = input.getBoundingClientRect().left;
+	dp.style.top = input.getBoundingClientRect().top + 30;
     var now = new Date();
     dp.insertAdjacentHTML('beforeEnd', datePickerTpl.replace("{m}", String(now.getMonth() + 1).padStart(2, "0")).replace("{y}", now.getFullYear()));
     hideInvalidDays(dp, now.getMonth() + 1, now.getFullYear());
